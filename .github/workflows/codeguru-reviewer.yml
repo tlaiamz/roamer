@@ -1,2 +1,7 @@
-- name: CodeGuru Reviewer
-  uses: aws-actions/codeguru-reviewer@v1.1
+on: [push]
+jobs:
+  codeguru-reviewer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: CodeGuru Reviewer
+        uses: aws-actions/codeguru-reviewer@v1.1
