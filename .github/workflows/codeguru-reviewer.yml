@@ -12,4 +12,4 @@ jobs:
           role-to-assume: arn:aws:iam::461731163182:role/codeguru-reviewer-github-actions-role
       - uses: aws-actions/codeguru-reviewer@v1.1
         with:
-          build_path: codeguru-reviewer-workflows-test
+          s3_bucket: codeguru-reviewer-workflows-test
