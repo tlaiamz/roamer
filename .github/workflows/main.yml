@@ -1,0 +1,56 @@
+name: Test
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'debug'
+      tags:
+        description: 'Run CodeGuru Security'
+
+permissions:
+  id-token: write
+  # for writing security events.
+  security-events: write
+  # only required for workflows in private repositories
+  actions: read
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Respository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::461731163182:role/CodeGuruSecurityGitHubAccessRole
+          aws-region: us-west-2
+          role-session-name: GitHubActionScript
+
+      - name: ECR Login
+        id: login-to-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registries: '324798398040'
+          aws-region: us-west-2
+
+      - name: Docker Pull
+        run: |
+          docker pull 324798398040.dkr.ecr.us-west-2.amazonaws.com/codegurusecurity-actions
+          docker image tag 324798398040.dkr.ecr.us-west-2.amazonaws.com/codegurusecurity-actions codeguru:latest
+
+      - name: Test using local action
+        uses: ./.github/actions
+        with:
+          source_path: .
+          aws_region: us-west-2
+      - name: print findings.
+        run: |
+          ls -l
+          cat codeguru-security-results.sarif.json
