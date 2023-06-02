@@ -1,13 +1,12 @@
-name: Test
+name: Amazon CodeGuru Security scan
 on:
   workflow_dispatch:
     inputs:
-      logLevel:
-        description: 'Log level'
+      roleName:
+        description: Role to assume
         required: true
-        default: 'debug'
-      tags:
-        description: 'Run CodeGuru Security'
+        default: CodeGuruSecurityGitHubAccessRole
+        type: string
 
 permissions:
   id-token: write
@@ -16,6 +15,7 @@ permissions:
   # only required for workflows in private repositories
   actions: read
   contents: read
+
 
 jobs:
   build:
@@ -29,7 +29,7 @@ jobs:
       - name: Configure aws credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::461731163182:role/CodeGuruSecurityGitHubAccessRole
+          role-to-assume: arn:aws:iam::461731163182:role/${{ inputs.roleName }}
           aws-region: us-west-2
           role-session-name: GitHubActionScript
 
@@ -45,11 +45,18 @@ jobs:
           docker pull 324798398040.dkr.ecr.us-west-2.amazonaws.com/codegurusecurity-actions
           docker image tag 324798398040.dkr.ecr.us-west-2.amazonaws.com/codegurusecurity-actions codeguru:latest
 
+      - name: Get action.yml File
+        uses: actions/checkout@v3
+        with:
+          repository: yueny2020/cgs-github-action-yml
+          path: ./action.yml
+
       - name: Test using local action
-        uses: ./.github/actions
+        uses: ./action.yml
         with:
           source_path: .
           aws_region: us-west-2
+
       - name: print findings.
         run: |
           ls -l
