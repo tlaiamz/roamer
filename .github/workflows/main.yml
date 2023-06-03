@@ -45,15 +45,7 @@ jobs:
           docker pull 324798398040.dkr.ecr.us-west-2.amazonaws.com/codegurusecurity-actions
           docker image tag 324798398040.dkr.ecr.us-west-2.amazonaws.com/codegurusecurity-actions codeguru:latest
 
-      - name: Get action.yml File
-        uses: actions/checkout@v3
-        with:
-          repository: tlaiamz/cgs-action
-          path: ./action.yml
-          fetch-depth: 0
-
-      - name: Test using local action
-        uses: ./action.yml
+      - uses: tlaiamz/cgs-action@v1
         with:
           source_path: .
           aws_region: us-west-2
