@@ -50,6 +50,7 @@ jobs:
         with:
           repository: tlaiamz/cgs-action
           path: ./action.yml
+          branch: main
 
       - name: Test using local action
         uses: ./action.yml
