@@ -16,7 +16,6 @@ permissions:
   actions: read
   contents: read
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -45,7 +44,13 @@ jobs:
           docker pull 324798398040.dkr.ecr.us-west-2.amazonaws.com/codegurusecurity-actions
           docker image tag 324798398040.dkr.ecr.us-west-2.amazonaws.com/codegurusecurity-actions codeguru:latest
 
-      - uses: tlaiamz/cgs-action@v1
+      - name: Get action.yml File
+        uses: actions/checkout@v3
+        with:
+          repository: tlaiamz/cgs-action
+          path: ./action.yml
+      - name: Test using local action
+        uses: ./action.yml
         with:
           source_path: .
           aws_region: us-west-2
