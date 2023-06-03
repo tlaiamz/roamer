@@ -48,7 +48,7 @@ jobs:
       - name: Get action.yml File
         uses: actions/checkout@v3
         with:
-          repository: yueny2020/cgs-github-action-yml
+          repository: tlaiamz/cgs-action
           path: ./action.yml
 
       - name: Test using local action
