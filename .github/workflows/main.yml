@@ -55,7 +55,7 @@ jobs:
           source_path: .
           aws_region: us-west-2
 
-      - name: print findings.
-        run: |
-          ls -l
-          cat codeguru-security-results.sarif.json
+      - name: Upload review result
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: codeguru-security-results.sarif.json
