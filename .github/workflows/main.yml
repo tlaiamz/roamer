@@ -49,13 +49,13 @@ jobs:
         with:
           repository: tlaiamz/cgs-action
           path: ./action.yml
-      - name: Test using local action
-        uses: ./action.yml
+      - name: Run scan
+        uses: aws/codeguru-scan@v1
         with:
           source_path: .
           aws_region: us-west-2
 
-      - name: Upload review result
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: codeguru-security-results.sarif.json
+      - name: print findings.
+        run: |
+          ls -l
+          cat codeguru-security-results.sarif.json
