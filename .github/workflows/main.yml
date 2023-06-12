@@ -1,12 +1,8 @@
-name: Amazon CodeGuru Security scan
+name: CodeGuru Security Example
 on:
-  workflow_dispatch:
-    inputs:
-      roleName:
-        description: Role to assume
-        required: true
-        default: CodeGuruSecurityGitHubAccessRole
-        type: string
+  push:
+    branches:
+      - 'master'
 
 permissions:
   id-token: write
@@ -21,41 +17,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Respository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Configure aws credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::461731163182:role/${{ inputs.roleName }}
-          aws-region: us-west-2
+          role-to-assume: arn:aws:iam::461731163182:role/CodeGuruSecurityGitHubAccessRole
+          aws-region: us-east-1
           role-session-name: GitHubActionScript
 
-      - name: ECR Login
-        id: login-to-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-        with:
-          registries: '324798398040'
-          aws-region: us-west-2
-
-      - name: Docker Pull
-        run: |
-          docker pull 324798398040.dkr.ecr.us-west-2.amazonaws.com/codegurusecurity-actions
-          docker image tag 324798398040.dkr.ecr.us-west-2.amazonaws.com/codegurusecurity-actions codeguru:latest
-
-      - name: Get action.yml File
-        uses: actions/checkout@v3
-        with:
-          repository: tlaiamz/cgs-action
-          path: ./action.yml
-      - name: Run scan
-        uses: aws/codeguru-scan@v1
+      - name: CodeGuru Security
+        uses: aws-actions/codeguru-security@v1
         with:
           source_path: .
-          aws_region: us-west-2
-
-      - name: print findings.
+          aws_region: us-east-1
+          fail_on_severity: Critical
+      - name: Print findings
         run: |
           ls -l
           cat codeguru-security-results.sarif.json
+
+      # If you want content in security scanning, you’ll need to enable codescanning by going into github.
+      # https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning-for-a-repository
+      - name: Upload result
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: codeguru-security-results.sarif.json
