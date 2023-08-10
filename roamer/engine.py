@@ -12,6 +12,7 @@ class Engine(object):
         self.original_dir = original_dir
         self.edit_dir = edit_dir
         self.commands = []
+        print('hello')
 
     def compile_commands(self):
         self.compare_dirs()
